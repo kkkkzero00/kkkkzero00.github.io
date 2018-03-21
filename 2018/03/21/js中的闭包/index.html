@@ -85,10 +85,13 @@
 <meta property="og:url" content="http://yoursite.com/2018/03/21/js中的闭包/index.html">
 <meta property="og:site_name" content="Hexo">
 <meta property="og:description" content="含义   关于闭包首先我们看看mdn上的解释：闭包是函数和声明该函数的词法环境的组合。 思考   所以闭包是指能够访问自由变量的函数。换句话说，在闭包中定义的函数可以“记忆”它被创建的环境。即使声明这些变量的外围函数已经返回以后，我们仍然可以访问在外围函数中声明的变量。显然，在这背后有一些事情发生了，使得这些变量在外围函数返回值以后仍然可以被访问到。    为了理解这是如何发生的，我们需要理解执行">
-<meta property="og:updated_time" content="2018-03-21T05:06:57.900Z">
+<meta property="og:image" content="http://p5xjqxkm5.bkt.clouddn.com/closure1.png">
+<meta property="og:image" content="http://p5xjqxkm5.bkt.clouddn.com/closure2.png">
+<meta property="og:updated_time" content="2018-03-21T07:36:28.164Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="js中的闭包">
 <meta name="twitter:description" content="含义   关于闭包首先我们看看mdn上的解释：闭包是函数和声明该函数的词法环境的组合。 思考   所以闭包是指能够访问自由变量的函数。换句话说，在闭包中定义的函数可以“记忆”它被创建的环境。即使声明这些变量的外围函数已经返回以后，我们仍然可以访问在外围函数中声明的变量。显然，在这背后有一些事情发生了，使得这些变量在外围函数返回值以后仍然可以被访问到。    为了理解这是如何发生的，我们需要理解执行">
+<meta name="twitter:image" content="http://p5xjqxkm5.bkt.clouddn.com/closure1.png">
 
 
 
@@ -301,9 +304,10 @@
         <h1 id="含义"><a href="#含义" class="headerlink" title="含义"></a>含义</h1><p>   关于闭包首先我们看看mdn上的解释：闭包是函数和声明该函数的词法环境的组合。</p>
 <h1 id="思考"><a href="#思考" class="headerlink" title="思考"></a>思考</h1><p>   所以闭包是指能够访问自由变量的函数。换句话说，在闭包中定义的函数可以“记忆”它被创建的环境。即使声明这些变量的外围函数已经返回以后，我们仍然可以访问在外围函数中声明的变量。显然，在这背后有一些事情发生了，使得这些变量在外围函数返回值以后仍然可以被访问到。</p>
 <p>   为了理解这是如何发生的，我们需要理解执行上下文这个概念。</p>
-<h4 id="Execution-Context-执行上下文"><a href="#Execution-Context-执行上下文" class="headerlink" title="Execution Context   执行上下文"></a>Execution Context   执行上下文</h4><p>   执行上下文是一个抽象的概念，ECMAScript 规范使用它来追踪代码的执行。它可能是你的代码第一次执行或执行的流程进入函数主体时所在的全局上下文。</p>
+<h4 id="Execution-Context-执行上下文"><a href="#Execution-Context-执行上下文" class="headerlink" title="Execution Context   执行上下文"></a>Execution Context   执行上下文</h4><p>   执行上下文是一个抽象的概念，ECMAScript 规范使用它来追踪代码的执行。它可能是你的代码第一次执行或执行的流程进入函数主体时所在的全局上下文。<br><img src="http://p5xjqxkm5.bkt.clouddn.com/closure1.png" alt="执行上下文图示1"></p>
 <p>   在任意一个时间点，只能有唯一一个执行上下文在运行之中。这就是为什么 JavaScript 是“单线程”的原因，意思就是一次只能处理一个请求。一般来说，浏览器会用“栈”来保存这个执行上下文。栈是一种“后进先出” (Last In First Out) 的数据结构，即最后插入该栈的元素会最先从栈中被弹出（这是因为我们只能从栈的顶部插入或删除元素）。当前的执行上下文，或者说正在运行中的执行上下文永远在栈顶。当运行中的上下文被完全执行以后，它会由栈顶弹出，使得下一个栈顶的项接替它成为正在运行的执行上下文。</p>
 <p>   除此之外，一个执行上下文正在运行并不代表另一个执行上下文需要等待它完成运行之后才可以开始运行。有时会出现这样的情况，一个正在运行中的上下文暂停或中止，另外一个上下文开始执行。暂停的上下文可能在稍后某一时间点从它中止的位置继续执行。一个新的执行上下文被创建并推入栈顶，成为当前的执行上下文，这就是执行上下文替代的机制。</p>
+<p><img src="http://p5xjqxkm5.bkt.clouddn.com/closure2.png" alt="执行上下文图示2"></p>
 <h4 id="词法环境"><a href="#词法环境" class="headerlink" title="词法环境"></a>词法环境</h4><p>   定义：词法环境是一个基于 ECMAScript 代码的词法嵌套结构来定义特定变量和函数标识符的关联的规范类型。词法环境由一个环境记录及一个可能为空的对外部词法环境的引用构成。通常，一个词法环境会与ECMAScript代码的一些特定语法结构相关联，例如：FunctionDeclaration（函数声明）, BlockStatement（块语句）, TryStatement（Try语句）的Catch clause（Catch子句）。每当此类代码执行时，都会创建一个新的词法环境。— ECMAScript-262/6.0</p>
 <p>让我们来把这个概念分解一下。</p>
 <h4 id="动态作用域-vs-静态作用域"><a href="#动态作用域-vs-静态作用域" class="headerlink" title="动态作用域 vs. 静态作用域"></a>动态作用域 vs. 静态作用域</h4><p>   动态作用域的语言“基于栈来实现”，意思就是函数的局部变量和参数都储存在栈中。因此，程序堆栈的运行状态决定你引用的是什么变量。</p>
